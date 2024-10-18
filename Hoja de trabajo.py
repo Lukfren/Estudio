@@ -20,6 +20,8 @@ class Clientes:
         self.mes = 0
         self.estado = "S"
 
+mes = [0]*12
+
 def programa_principal():
     abrir_archivos()
     menu()
@@ -61,18 +63,18 @@ def menu():
     print("4. Comprar")
     print("5. Informe gobierno")
     print("6. Fin del programa")
-    opc = int(input("Ingrese su opción: "))
-    while opc != 6:
+    opc = input("Ingrese su opción: ")
+    while opc != "6":
         match opc:
-            case 1:
+            case "1":
                 alta_comercios()
-            case 2:
+            case "2":
                 alta_clientes()
-            case 3:
+            case "3":
                 actualizar_billetera()
-            case 4:
+            case "4":
                 comprar()
-            case 5:
+            case "5":
                 informe_gobierno()
         print("Menu")
         print("1. Alta comercios")
@@ -81,7 +83,7 @@ def menu():
         print("4. Comprar")
         print("5. Informe gobierno")
         print("6. Fin del programa")
-        opc = int(input("Ingrese su opción: "))
+        opc = input("Ingrese su opción: ")
 
 def alta_comercios():
     global arFiCom,arLoCom
@@ -89,44 +91,101 @@ def alta_comercios():
     os.system("cls")
     qr = str(input("Ingresar comercio:"))
     val = ver_comercio(qr)
-    if val != -1:
+    if val == -1:
         com.qr = qr
+        os.system("cls")
         print("Comercio añadido")
     else:
+        os.system("cls")
         print("Comercio repetido")
-
-    print("")
 
 def ver_comercio(par):
     global arFiCom, arLoCom
     com = Comercios()
-    arLoCom.seek(0.0)
-    com = pickle.load(arLoCom)
-    tamreg = arLoCom.tell()
-    tamarc = os.path.getsize(arFiCom)
-    cantreg = tamarc//tamreg
-    pri = 0
-    ult = cantreg
-    med = (pri+ult)//2
-    arLoCom.seek(med*tamreg, 0)
-    pos = arLoCom.tell()
-    com = pickle.load(arLoCom)
-    while com.qr != par and pri<ult:
-        if com.qr > par:
-            ult = med -1
-        else:
-            pri = med + 1
-        mid = (pri+ult)//2
+    if os.path.getsize(arFiCom) == 0:
+        return -1
+    else:
+        arLoCom.seek(0, 0)
+        com = pickle.load(arLoCom)
+        tamreg = arLoCom.tell()
+        tamarc = os.path.getsize(arFiCom)
+        cantreg = tamarc//tamreg
+        pri = 0
+        ult = cantreg
+        med = (pri+ult)//2
         arLoCom.seek(med*tamreg, 0)
         pos = arLoCom.tell()
         com = pickle.load(arLoCom)
-    if com.qr == par:
-        return -1
-    else:
-        return pos
+        while com.qr != par and pri<ult:
+            if com.qr > par:
+                ult = med -1
+            else:
+                pri = med + 1
+            med = (pri+ult)//2
+            arLoCom.seek(med*tamreg, 0)
+            pos = arLoCom.tell()
+            com = pickle.load(arLoCom)
+        if com.qr == par:
+            return pos
+        else:
+            return -1
     
 def alta_clientes():
-    print("")
+    global arFiCli, arLoCli
+    cli = Clientes()
+    dni = ""
+    while dni == "":
+        dni = str(input("Ingrese su DNI: "))
+        if len(dni) <= 8 and dni != "":
+            cli.dni = dni
+        else:
+            print("DNI inválido")
+    saldo = 0.0
+    while saldo == 0.0:
+        saldo = float(input("Ingrese su saldo: "))
+        if saldo > 0.0:
+            cli.saldo = saldo
+        else:
+            print("Valor inválido")
+    
+def ver_cliente(par):
+    global arFiCli, arLoCli
+    cli = Clientes()
+    if os.path.getsize(arFiCli) == 0:
+        return -1
+    else:
+        arLoCli.seek(0, 0)
+        cli = pickle.load(arLoCli)
+        tamreg = arLoCli.tell()
+        tamarc = os.path.getsize(arFiCli)
+        cantreg = tamarc//tamreg
+        pri = 0
+        ult = cantreg
+        med = (pri+ult)//2
+        arLoCli.seek(med*tamreg, 0)
+        pos = arLoCli.tell()
+        com = pickle.load(arLoCli)
+        while com.qr != par and pri<ult:
+            if com.qr > par:
+                ult = med -1
+            else:
+                pri = med + 1
+            med = (pri+ult)//2
+            arLoCli.seek(med*tamreg, 0)
+            pos = arLoCli.tell()
+            com = pickle.load(arLoCli)
+        if com.qr == par:
+            return pos
+        else:
+            return -1
+
+
+
+    
+
+
+
+
 def actualizar_billetera():
     print("")
 def comprar():
